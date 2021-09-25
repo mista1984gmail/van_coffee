@@ -27,7 +27,8 @@ public class App
             log.info("Enter 3 to show coffee in the van");//показать кофе в фургоне
             log.info("Enter 4 to add van");//добавить фургон
             log.info("Enter 5 to load the coffee van");//добавить кофе в фургон
-            log.info("Enter 6 to sort coffee by price per kilogram");//добавить кофе в фургон
+            log.info("Enter 6 to sort coffee by price per kilogram");//
+            log.info("Enter 7 to find coffee in a given price range");//
             System.out.println("_______________________________________________________________________");
             // reading input
             userInput = scanner.nextInt();
@@ -55,6 +56,9 @@ public class App
                 case 6:
                     sortCoffeeByPricePerKilogram();
                     break;
+                case 7:
+                    chooseCoffeePriceRangePerKilogramm();
+                    break;
                 default:
                     log.info("There is no such option, please choose another option.");
             }
@@ -62,6 +66,19 @@ public class App
         } while (userInput != 0);
 
         DB.getInstance().save();
+    }
+    private static void chooseCoffeePriceRangePerKilogramm() throws Exception {
+        int id;
+        double start;
+        double end;
+        log.info("Input id Van for sort coffee by price per kilogram");
+        Scanner scanner = new Scanner(System.in);
+        id = scanner.nextInt();
+        log.info("Input the minimum sample value for coffee by price per kilogram");
+        start = scanner.nextDouble();
+        log.info("Input the maximum sample value for coffee by price per kilogram");
+        end = scanner.nextDouble();
+        VAN_SERVICE.chooseCoffeePriceRangePerKg(id,start,end);
     }
 
     private static void sortCoffeeByPricePerKilogram() throws Exception {

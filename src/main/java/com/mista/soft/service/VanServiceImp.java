@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.util.*;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 @Slf4j
 public class VanServiceImp implements VanService {
@@ -53,6 +54,7 @@ public class VanServiceImp implements VanService {
     public void showCoffeeInfo(int id) throws Exception {
         log.info("Showing coffee in vans");
         log.info(String.valueOf(repository.coffees(id)));
+        totalCalculation(id);
     }
 
     @Override
@@ -96,6 +98,7 @@ public class VanServiceImp implements VanService {
                 break;
             case 2:
                 packageCoffee = PackageCoffee.BAGS;
+                break;
             default:
                 log.info("There is no such option, please choose another option.");
         }
@@ -119,7 +122,53 @@ public class VanServiceImp implements VanService {
             }
         });
         for (Coffee coffee:coffeeList) {
-            System.out.println(coffee);
+            System.out.print(coffee);
         }
+        System.out.println();
+        totalCalculation(coffeeList);
+    }
+
+    @Override
+    public void chooseCoffeePriceRangePerKg(int id, double start, double end) throws Exception {
+        log.info("Showing coffee van");
+        List<Coffee> coffeeList=repository.coffees(id);
+        List<Coffee> listChoose = coffeeList.stream()
+                .filter(s ->(s.getPriceForKg()  >= start && s.getPriceForKg() <= end))
+                .collect(Collectors.toList());
+        for (Coffee coffee:listChoose) {
+            System.out.print(coffee);
+        }
+        System.out.println();
+        totalCalculation(listChoose);
+    }
+
+    @Override
+    public void totalCalculation(int id) throws Exception {
+        double totalNetWeight=0;
+        double totalGrossWeight=0;
+        double totalCost=0;
+        List<Coffee> coffeeList=repository.coffees(id);
+        for (Coffee coffee:coffeeList) {
+            totalNetWeight = totalNetWeight + coffee.getNetWeight()*coffee.getQuantities();
+            totalGrossWeight = totalGrossWeight + coffee.getGrossWeight()*coffee.getQuantities();
+            totalCost = totalCost + coffee.getPrice()*coffee.getQuantities();
+        }
+        log.info("TOTAL NET WEIGHT: " + totalNetWeight + " KG;"+ "TOTAL GROSS WEIGHT: "
+                + totalGrossWeight + " KG;" + " TOTAL COST: " + totalCost + " $");
+
+    }
+
+    @Override
+    public void totalCalculation(List<Coffee> coffeeList) throws Exception {
+        double totalNetWeight=0;
+        double totalGrossWeight=0;
+        double totalCost=0;
+        for (Coffee coffee:coffeeList) {
+            totalNetWeight = totalNetWeight + coffee.getNetWeight()*coffee.getQuantities();
+            totalGrossWeight = totalGrossWeight + coffee.getGrossWeight()*coffee.getQuantities();
+            totalCost = totalCost + coffee.getPrice()*coffee.getQuantities();
+        }
+        log.info("TOTAL NET WEIGHT: " + totalNetWeight + " KG;"+ "TOTAL GROSS WEIGHT: "
+                + totalGrossWeight + " KG;" + " TOTAL COST: " + totalCost + " $");
     }
 }
