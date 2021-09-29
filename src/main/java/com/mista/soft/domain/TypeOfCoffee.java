@@ -4,14 +4,12 @@ import java.io.Serializable;
 
 public enum TypeOfCoffee implements Serializable {
     BEAN_COFFEE(1,"bean_coffee"),
-    DISSOLVE_COFFEE_IN_CANS(2,"dissolve_coffee_in_cans"),
-    DISSOLVE_COFFEE_BAGS(3,"dissolve_coffee_bags"),
-    GROUND_COFFEE(4,"ground_coffee");
+    DISSOLVE_COFFEE(2,"dissolve_coffee_in_cans"),
+    GROUND_COFFEE(3,"ground_coffee");
 
 
     /*BEAN_COFFEE, // кофе в зернах
-    DISSOLVE_COFFEE_IN_CANS,//растворимый кофе в банках
-    DISSOLVE_COFFEE_BAGS, //растворимый кофе в бпакетах
+    DISSOLVE_COFFEE,//растворимый кофе в банках
     GROUND_COFFEE,//молотый кофе*/
 
 

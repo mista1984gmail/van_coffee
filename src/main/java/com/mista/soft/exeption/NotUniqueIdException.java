@@ -4,6 +4,6 @@ import com.mista.soft.domain.Van;
 
 public class NotUniqueIdException extends Exception{
     public NotUniqueIdException(Van van) {
-        super("User is not saved: " + van);
+        super("Van is not saved: " + van);
     }
 }

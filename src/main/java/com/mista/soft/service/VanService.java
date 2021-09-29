@@ -17,7 +17,7 @@ public interface VanService {
     void chooseCoffeePriceRangePerKg(int id, double start, double end) throws Exception;
     void totalCalculation(int id) throws Exception;
     void totalCalculation(List<Coffee>coffeeList) throws Exception;
-
+    void sortingByTypeOfCoffee(int id, int type) throws Exception;
 
 
 }

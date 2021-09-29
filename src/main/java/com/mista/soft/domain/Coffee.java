@@ -20,6 +20,7 @@ public abstract class Coffee implements Comparable, Serializable {
         this.priceForKg=price/netWeight;
     }
 
+
     public String getNameCoffee() {
         return nameCoffee;
     }

@@ -1,6 +1,7 @@
 package com.mista.soft.service;
 
 import com.mista.soft.domain.*;
+import com.mista.soft.exeption.IdIsNotAllowedOnDbException;
 import com.mista.soft.repository.VanRepository;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
@@ -20,8 +21,8 @@ public class VanServiceImp implements VanService {
     @Override
     public void saveVan(@NonNull Van van) throws Exception {
         log.info("Trying to save van: {}", van);
-        boolean isUserSaved = repository.saveVan(van);
-        String success = isUserSaved ? "" : "not ";
+        boolean isVanSaved = repository.saveVan(van);
+        String success = isVanSaved ? "" : "not ";
         log.info("Van was {}saved: {}", success, van);
     }
 
@@ -41,13 +42,19 @@ public class VanServiceImp implements VanService {
     @Override
     public void showInfo() throws Exception {
         log.info("Showing info about vans");
-        repository.getVans().forEach(LOG_ACTION);
+        try{
+        repository.getVans().forEach(LOG_ACTION);}
+        catch (IdIsNotAllowedOnDbException e){
+            e.getMessage();
+        }
     }
 
     @Override
     public void deleteVan(int id) throws Exception {
         log.info("Trying to delete van with id= '{}'", id);
+        log.info("Van with id= '{}' delete", id);
         repository.deleteVan(id);
+
     }
 
     @Override
@@ -60,35 +67,8 @@ public class VanServiceImp implements VanService {
     @Override
     public Coffee addCoffee() throws Exception {
         Scanner scanner = new Scanner(System.in);
-        log.info("Name Coffee: ");
-        String nameCoffee=scanner.nextLine();
-        log.info("Net weight: ");
-        double netWeight=scanner.nextDouble();
-        log.info("Gross weight: ");
-        double grossWeight=scanner.nextDouble();
-        log.info("Quantities: ");
-        int quantities=scanner.nextInt();
-        log.info("Price: ");
-        double price=scanner.nextDouble();
-        log.info("Type of coffee 1 - BEAN_COFFEE; 2 - DISSOLVE_COFFEE_IN_CANS; 3 - DISSOLVE_COFFEE_BAGS; 4 - GROUND_COFFEE");
+        log.info("Type of coffee 1 - BEAN_COFFEE; 2 - DISSOLVE_COFFEE; 3 - GROUND_COFFEE");
         int i = scanner.nextInt();
-        TypeOfCoffee typeOfCoffee=null;
-        switch (i){
-            case 1:
-                typeOfCoffee = TypeOfCoffee.BEAN_COFFEE;
-                break;
-            case 2:
-                typeOfCoffee = TypeOfCoffee.DISSOLVE_COFFEE_IN_CANS;
-                break;
-            case 3:
-                typeOfCoffee = TypeOfCoffee.DISSOLVE_COFFEE_BAGS;
-                break;
-            case 4:
-                typeOfCoffee = TypeOfCoffee.GROUND_COFFEE;
-                break;
-            default:
-                log.info("There is no such option, please choose another option.");
-        }
         log.info("Package 1 - CANS; 2 - BAGS");
         int j = scanner.nextInt();
         PackageCoffee packageCoffee = null;
@@ -102,8 +82,32 @@ public class VanServiceImp implements VanService {
             default:
                 log.info("There is no such option, please choose another option.");
         }
-        Coffee coffee = new DissolveCoffee(nameCoffee,netWeight,grossWeight,quantities,price,typeOfCoffee,packageCoffee);
-        return coffee;
+        log.info("Name Coffee: ");
+        String name = scanner.next();
+        log.info("Net weight: ");
+        double netWeight=scanner.nextDouble();
+        log.info("Gross weight: ");
+        double grossWeight=scanner.nextDouble();
+        log.info("Quantities: ");
+        int quantities=scanner.nextInt();
+        log.info("Price: ");
+        double price=scanner.nextDouble();
+
+
+        switch (i){
+            case 1:
+                Coffee beanCoffee = new BeanCoffee(name,netWeight,grossWeight,quantities,price,packageCoffee);
+                return beanCoffee;
+            case 2:
+                Coffee dissolveCoffee = new DissolveCoffee(name,netWeight,grossWeight,quantities,price,packageCoffee);
+                return dissolveCoffee;
+            case 3:
+                Coffee groundCoffee = new GroundCoffee(name,netWeight,grossWeight,quantities,price,packageCoffee);
+                return groundCoffee;
+            default:
+                log.info("There is no such option, please choose another option.");
+        }
+        return null;
     }
     @Override
     public void sortCoffeeByPriceForKg(int id) throws Exception {
@@ -153,8 +157,8 @@ public class VanServiceImp implements VanService {
             totalGrossWeight = totalGrossWeight + coffee.getGrossWeight()*coffee.getQuantities();
             totalCost = totalCost + coffee.getPrice()*coffee.getQuantities();
         }
-        log.info("TOTAL NET WEIGHT: " + totalNetWeight + " KG;"+ "TOTAL GROSS WEIGHT: "
-                + totalGrossWeight + " KG;" + " TOTAL COST: " + totalCost + " $");
+        System.out.println(("TOTAL NET WEIGHT: " + totalNetWeight + " KG;"+ "TOTAL GROSS WEIGHT: "
+                + totalGrossWeight + " KG;" + " TOTAL COST: " + totalCost + " $"));
 
     }
 
@@ -168,7 +172,37 @@ public class VanServiceImp implements VanService {
             totalGrossWeight = totalGrossWeight + coffee.getGrossWeight()*coffee.getQuantities();
             totalCost = totalCost + coffee.getPrice()*coffee.getQuantities();
         }
-        log.info("TOTAL NET WEIGHT: " + totalNetWeight + " KG;"+ "TOTAL GROSS WEIGHT: "
-                + totalGrossWeight + " KG;" + " TOTAL COST: " + totalCost + " $");
+        System.out.println(("TOTAL NET WEIGHT: " + totalNetWeight + " KG;"+ "TOTAL GROSS WEIGHT: "
+                + totalGrossWeight + " KG;" + " TOTAL COST: " + totalCost + " $"));
+    }
+
+    @Override
+    public void sortingByTypeOfCoffee(int id, int type) throws Exception {
+        log.info("Showing coffee van");
+        List<Coffee> coffeeList=repository.coffees(id);
+        Class clazz=null;
+        switch (type){
+        case 1:
+            clazz = BeanCoffee.class;
+            break;
+        case 2:
+            clazz = DissolveCoffee.class;
+            break;
+        case 3:
+            clazz = GroundCoffee.class;
+            break;
+        default:
+        log.info("There is no such option, please choose another option.");
+    }
+        //TypeOfCoffee typeOfCoffee = TypeOfCoffee.values()[type];
+        Class finalClazz = clazz;
+        List<Coffee> listChoose = coffeeList.stream()
+                .filter(s ->s.getClass().equals(finalClazz))
+                .collect(Collectors.toList());
+        for (Coffee coffee:listChoose) {
+            System.out.print(coffee);
+        }
+        System.out.println();
+        totalCalculation(listChoose);
     }
 }

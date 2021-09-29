@@ -21,6 +21,7 @@ public final class DB implements Serializable, AutoCloseable {
     public static DB getInstance(){
         return instance;
     }
+
     public void executeSaveOperation(Van van)
             throws NotUniqueIdException {
         van.setId(currentId);
